@@ -1,0 +1,30 @@
+﻿@page "/weather"
+@using ElTiempo.Model
+@inject HttpClient Client
+
+<h3>Weather</h3>
+<div>
+    <input type="text" placeholder="Escribe una ciudad" @bind="city"/>
+    <button @onclick="GetWeather">:)</button><br/><br/>
+    
+    <p>@latitud</p>
+    <p>@longitud</p>
+</div>
+
+@code {
+    string city = "";
+    string latitud = "";
+    string longitud = "";
+    
+    async Task GetWeather()
+    {
+        var cityData = await GetCityData();
+        latitud = cityData.results[0].lat.ToString();
+        longitud = cityData.results[0].lon.ToString();
+    }
+    
+    async Task<CityData> GetCityData()
+    {
+        return await Client.GetFromJsonAsync<CityData>(Endpoints.GetGeoapifyEndpoint(city));
+    }
+}
