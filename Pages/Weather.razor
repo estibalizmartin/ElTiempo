@@ -1,30 +1,51 @@
 ﻿@page "/weather"
 @using ElTiempo.Model
 @inject HttpClient Client
+@using System.Globalization
 
 <h3>Weather</h3>
 <div>
-    <input type="text" placeholder="Escribe una ciudad" @bind="city"/>
+    <input type="text" placeholder="Escribe una ciudad" @bind="cityName"/>
     <button @onclick="GetWeather">:)</button><br/><br/>
     
-    <p>@latitud</p>
-    <p>@longitud</p>
+    <div class="text-center">
+        <div class="display-5">Bilbao</div>
+        <div class="display-1">5º</div>
+        <div class="display-6">Rainy</div>
+    </div>
+    
+    <div class="card-group">
+        <ElTiempo.Componentes.WeatherCard/>
+    </div>
 </div>
 
 @code {
-    string city = "";
-    string latitud = "";
-    string longitud = "";
+    string? cityName;
+    string? city;
+    float latitud;
+    float longitud;
     
     async Task GetWeather()
     {
-        var cityData = await GetCityData();
-        latitud = cityData.results[0].lat.ToString();
-        longitud = cityData.results[0].lon.ToString();
+        var weatherData = await GetWeatherModel();
     }
     
-    async Task<CityData> GetCityData()
+    async Task<WeatherModel?> GetWeatherModel()
     {
-        return await Client.GetFromJsonAsync<CityData>(Endpoints.GetGeoapifyEndpoint(city));
+        var cityData = await GetCityData();
+        if (cityData != null)
+        {
+            city = cityData.results[0].name;
+            latitud = cityData.results[0].lat;
+            longitud = cityData.results[0].lon;
+        }
+        Console.WriteLine("antes del segundo api");
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+        return await Client.GetFromJsonAsync<WeatherModel>(Endpoints.GetOpenMeteoEndpoint(longitud, latitud));
+    }
+    
+    async Task<CityData?> GetCityData()
+    {
+        return await Client.GetFromJsonAsync<CityData>(Endpoints.GetGeoapifyEndpoint(cityName));
     }
 }

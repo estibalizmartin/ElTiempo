@@ -44,8 +44,8 @@ public class Result
     public string state { get; set; }
     public string country { get; set; }
     public string country_code { get; set; }
-    public double lon { get; set; }
-    public double lat { get; set; }
+    public float lon { get; set; }
+    public float lat { get; set; }
     public string formatted { get; set; }
     public string address_line1 { get; set; }
     public string address_line2 { get; set; }
