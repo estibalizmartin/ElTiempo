@@ -5,7 +5,7 @@
 
 <h3>Weather</h3>
 <div>
-    <input type="text" placeholder="Escribe una ciudad" @bind="cityName"/>
+    <input type="text" placeholder="Escribe una ciudad" @bind="city"/>
     <button @onclick="GetWeather">:)</button><br/><br/>
     
     <div class="text-center">
@@ -15,19 +15,25 @@
     </div>
     
     <div class="card-group">
-        <ElTiempo.Componentes.WeatherCard/>
+        for (int = 0; i < WeatherModel.daily.time.length; i++)
+        {
+            <ElTiempo.Componentes.WeatherCard Day=@weatherData.daily.time[i]
+                                              MinWeatherData=@weatherData.daily.temperature_2m_min[i]
+                                              MaxWeatherData=@weatherData.daily.temperature_2m_max[i]/>
+        }
     </div>
 </div>
 
 @code {
-    string? cityName;
     string? city;
+    string? name;
     float latitud;
     float longitud;
+    WeatherModel? weatherData;
     
     async Task GetWeather()
     {
-        var weatherData = await GetWeatherModel();
+        weatherData = await GetWeatherModel();
     }
     
     async Task<WeatherModel?> GetWeatherModel()
@@ -35,7 +41,7 @@
         var cityData = await GetCityData();
         if (cityData != null)
         {
-            city = cityData.results[0].name;
+            name = cityData.results[0].name;
             latitud = cityData.results[0].lat;
             longitud = cityData.results[0].lon;
         }
@@ -46,6 +52,6 @@
     
     async Task<CityData?> GetCityData()
     {
-        return await Client.GetFromJsonAsync<CityData>(Endpoints.GetGeoapifyEndpoint(cityName));
+        return await Client.GetFromJsonAsync<CityData>(Endpoints.GetGeoapifyEndpoint(city));
     }
 }
